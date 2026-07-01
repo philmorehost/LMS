@@ -308,6 +308,7 @@ Route::prefix('payment')->name('payment.')->group(function () {
 Route::prefix('instructor')->name('instructor.')->middleware(['web', 'auth', 'role:instructor,admin'])->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\Instructor\DashboardController::class, 'index'])->name('dashboard');
     Route::resource('/courses', \App\Http\Controllers\Instructor\CourseController::class);
+    Route::post('/subscriptions', [\App\Http\Controllers\Instructor\SubscriptionController::class, 'store'])->name('subscriptions.store');
     Route::resource('/courses.modules', \App\Http\Controllers\Instructor\ModuleController::class)->shallow();
     Route::resource('/courses.modules.lessons', \App\Http\Controllers\Instructor\LessonController::class)->shallow();
     Route::get('/earnings', [\App\Http\Controllers\Instructor\EarningsController::class, 'index'])->name('earnings');
@@ -331,6 +332,7 @@ Route::prefix('admin')->name('admin.')->middleware(['web', 'auth', 'role:admin']
     Route::resource('/courses', \App\Http\Controllers\Admin\CourseController::class);
     Route::post('/courses/{id}/approve', [\App\Http\Controllers\Admin\CourseController::class, 'approve'])->name('courses.approve');
     Route::post('/courses/{id}/reject', [\App\Http\Controllers\Admin\CourseController::class, 'reject'])->name('courses.reject');
+    Route::post('/courses/{id}/approve-subscription', [\App\Http\Controllers\Admin\CourseController::class, 'approveSubscription'])->name('courses.approve-subscription');
     Route::resource('/categories', \App\Http\Controllers\Admin\CategoryController::class);
     Route::resource('/course-levels', \App\Http\Controllers\Admin\CourseLevelController::class);
     Route::resource('/course-languages', \App\Http\Controllers\Admin\CourseLanguageController::class);

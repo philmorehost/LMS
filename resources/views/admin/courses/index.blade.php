@@ -48,6 +48,14 @@
                         <button type="submit" style="background:none; border:none; color:var(--success); cursor:pointer; font-size:13px;">Publish</button>
                     </form>
                     @endif
+
+                    @if($course->pending_subscription_id)
+                    <br>
+                    <form method="POST" action="{{ route('admin.courses.approve-subscription', $course->id) }}" style="display:inline;">
+                        @csrf
+                        <button type="submit" style="background:none; border:none; color:var(--primary); cursor:pointer; font-size:13px;">Approve Subscription</button>
+                    </form>
+                    @endif
                 </td>
             </tr>
             @endforeach

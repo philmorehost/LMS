@@ -15,7 +15,11 @@ class CourseController extends Controller
         try {
             $courses = \DB::table('courses')
                 ->join('users', 'courses.instructor_id', '=', 'users.id')
-                ->select('courses.*', 'users.name as instructor_name')
+                ->leftJoin('course_subscriptions', function($join) {
+                    $join->on('courses.id', '=', 'course_subscriptions.course_id')
+                         ->where('course_subscriptions.status', '=', 'pending');
+                })
+                ->select('courses.*', 'users.name as instructor_name', 'course_subscriptions.id as pending_subscription_id')
                 ->orderBy('courses.created_at', 'desc')
                 ->get();
         } catch (\Exception $e) {}
@@ -45,6 +49,26 @@ class CourseController extends Controller
         } catch (\Exception $e) {}
 
         return back()->with('success', 'Course unpublished successfully.');
+    }
+
+    public function approveSubscription($id)
+    {
+        try {
+            \DB::table('course_subscriptions')
+                ->where('course_id', $id)
+                ->where('status', 'pending')
+                ->update([
+                    'status' => 'active',
+                    'updated_at' => now(),
+                ]);
+
+            \DB::table('courses')->where('id', $id)->update([
+                'is_featured' => true,
+                'updated_at' => now(),
+            ]);
+        } catch (\Exception $e) {}
+
+        return back()->with('success', 'Course subscription approved. Course is now featured.');
     }
 
     protected function getSettings(): array

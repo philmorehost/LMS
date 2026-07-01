@@ -15,15 +15,17 @@ class WithdrawalController extends Controller
         
         $balance = $this->calculateBalance($user->id);
         $withdrawals = [];
+        $profile = null;
 
         try {
             $withdrawals = \DB::table('withdrawals')
                 ->where('user_id', $user->id)
                 ->orderBy('created_at', 'desc')
                 ->get();
+            $profile = \DB::table('instructor_profiles')->where('user_id', $user->id)->first();
         } catch (\Exception $e) {}
 
-        return view('instructor.withdrawals', compact('user', 'settings', 'balance', 'withdrawals'));
+        return view('instructor.withdrawals', compact('user', 'settings', 'balance', 'withdrawals', 'profile'));
     }
 
     public function request(Request $request)
@@ -31,7 +33,7 @@ class WithdrawalController extends Controller
         $request->validate([
             'amount' => 'required|numeric|min:1',
             'bank_name' => 'required|string|max:100',
-            'account_number' => 'required|string|max:30',
+            'account_number' => 'required|string|max:50',
             'account_name' => 'required|string|max:100',
         ]);
 

@@ -39,6 +39,15 @@
                         </td>
                         <td>{{ $course->created_at }}</td>
                         <td style="text-align:right;">
+                            @if(!$course->is_featured)
+                                <form method="POST" action="{{ route('instructor.subscriptions.store') }}" style="display:inline;">
+                                    @csrf
+                                    <input type="hidden" name="course_id" value="{{ $course->id }}">
+                                    <button type="submit" class="btn btn-secondary" style="padding:4px 8px; font-size:11px; margin-right:8px;" onsubmit="return confirm('Request to feature this course?')">Request Featured Status</button>
+                                </form>
+                            @else
+                                <span style="font-size:11px; color:#34d399; margin-right:8px;">★ Featured</span>
+                            @endif
                             <a href="{{ route('instructor.courses.edit', $course->id) }}" style="color:#67e8f9; font-size:13px; margin-right:12px;"><i class="fa fa-pen-to-square"></i> Edit Syllabus</a>
                             <form method="POST" action="{{ route('instructor.courses.destroy', $course->id) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this course?')">
                                 @csrf

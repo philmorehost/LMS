@@ -109,6 +109,13 @@
                                 @endif
                             </div>
 
+                            <div style="margin-bottom:10px;">
+                                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                                    <input type="checkbox" name="lessons[{{ $lesson->id }}][is_preview]" style="width:14px; height:14px;" {{ $lesson->is_preview ? 'checked' : '' }}>
+                                    <span style="font-size:11px; color:var(--muted); font-weight:600;">Enable Free Preview (Students can view this lesson for free)</span>
+                                </label>
+                            </div>
+
                         </div>
                         @endforeach
                     </div>
@@ -187,6 +194,13 @@
                 <div style="margin-bottom:10px;">
                     <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:4px;">File Upload</label>
                     <input type="file" name="new_lessons[${lessonIndex}][file]" style="width:100%; padding:8px 12px; background:#111; border:1px solid var(--border); border-radius:6px; color:#fff; font-size:12px;">
+                </div>
+
+                <div style="margin-bottom:10px;">
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                        <input type="checkbox" name="new_lessons[${lessonIndex}][is_preview]" style="width:14px; height:14px;">
+                        <span style="font-size:11px; color:var(--muted); font-weight:600;">Enable Free Preview (Students can view this lesson for free)</span>
+                    </label>
                 </div>
             </div>
         `;

@@ -39,16 +39,17 @@
                 </div>
                 <div style="margin-bottom:16px;">
                     <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Bank Name</label>
-                    <input type="text" name="bank_name" style="width:100%; padding:12px; background:#0c0c1e; border:1px solid var(--border); border-radius:10px; color:#fff;" placeholder="e.g. Access Bank" required>
+                    <input type="text" name="bank_name" value="{{ $profile->bank_name ?? '' }}" style="width:100%; padding:12px; background:#0c0c1e; border:1px solid var(--border); border-radius:10px; color:#fff;" placeholder="e.g. Access Bank" required>
                 </div>
                 <div style="margin-bottom:16px;">
                     <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Account Number</label>
-                    <input type="text" name="account_number" style="width:100%; padding:12px; background:#0c0c1e; border:1px solid var(--border); border-radius:10px; color:#fff;" placeholder="10 digits" required>
+                    <input type="text" name="account_number" value="{{ $profile->account_number ?? '' }}" style="width:100%; padding:12px; background:#0c0c1e; border:1px solid var(--border); border-radius:10px; color:#fff;" placeholder="10 digits" required>
                 </div>
                 <div style="margin-bottom:24px;">
                     <label style="display:block; font-size:12px; color:var(--muted); margin-bottom:6px;">Account Name</label>
-                    <input type="text" name="account_name" style="width:100%; padding:12px; background:#0c0c1e; border:1px solid var(--border); border-radius:10px; color:#fff;" placeholder="Full account name" required>
+                    <input type="text" name="account_name" value="{{ $profile->account_name ?? '' }}" style="width:100%; padding:12px; background:#0c0c1e; border:1px solid var(--border); border-radius:10px; color:#fff;" placeholder="Full account name" required>
                 </div>
+                <p style="font-size:11px; color:var(--muted); margin-bottom:16px;">To save these details for future withdrawals, please update your <a href="{{ route('instructor.profile') }}" style="color:var(--primary);">Profile</a>.</p>
                 <button type="submit" class="btn btn-primary" style="padding:12px 24px; font-weight:600;"><i class="fa fa-paper-plane"></i> Submit Request</button>
             </form>
         </div>

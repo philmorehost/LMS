@@ -192,6 +192,7 @@ class CourseController extends Controller
                         'video_url' => $lesData['video_url'] ?? null,
                         'content' => $lesData['content'] ?? null,
                         'type' => $lesData['type'] ?? 'video',
+                        'is_preview' => isset($lesData['is_preview']) ? true : false,
                         'updated_at' => now(),
                     ];
 
@@ -226,6 +227,7 @@ class CourseController extends Controller
                             'video_url' => $lesData['video_url'] ?? null,
                             'content' => $lesData['content'] ?? null,
                             'type' => $lesData['type'] ?? 'video',
+                            'is_preview' => isset($lesData['is_preview']) ? true : false,
                             'position' => 0,
                             'is_published' => true,
                             'created_at' => now(),
