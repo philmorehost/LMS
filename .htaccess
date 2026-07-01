@@ -1,0 +1,68 @@
+<IfModule mod_rewrite.c>
+    Options -Indexes
+    RewriteEngine On
+
+    # ── Block direct access to sensitive files ────────────────────────────────
+    RewriteRule ^\.env$               - [F,L]
+    RewriteRule ^\.env\..*$           - [F,L]
+    RewriteRule ^composer\.(json|lock)$ - [F,L]
+    RewriteRule ^artisan$             - [F,L]
+    RewriteRule ^phpunit\.xml$        - [F,L]
+    RewriteRule ^package.*\.json$     - [F,L]
+    RewriteRule ^_lms_build/          - [F,L]
+    RewriteRule ^app/                 - [F,L]
+    RewriteRule ^bootstrap/           - [F,L]
+    RewriteRule ^config/              - [F,L]
+    RewriteRule ^database/            - [F,L]
+    RewriteRule ^resources/           - [F,L]
+    RewriteRule ^routes/              - [F,L]
+    RewriteRule ^storage/             - [F,L]
+    RewriteRule ^tests/               - [F,L]
+    RewriteRule ^vendor/              - [F,L]
+
+    # ── Route static assets from public/ directly ─────────────────────────────
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{DOCUMENT_ROOT}/public/%{REQUEST_URI} -f
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    # ── Route everything else through public/index.php ────────────────────────
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ public/index.php [L]
+
+    # ── If requesting root (/) serve public/index.php ─────────────────────────
+    RewriteRule ^$ public/index.php [L]
+
+</IfModule>
+
+# ── Security: disable server signature ────────────────────────────────────────
+ServerSignature Off
+
+# ── Browser caching for static assets ────────────────────────────────────────
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/webp           "access plus 1 year"
+    ExpiresByType image/jpeg           "access plus 1 year"
+    ExpiresByType image/png            "access plus 1 year"
+    ExpiresByType image/gif            "access plus 1 year"
+    ExpiresByType image/svg+xml        "access plus 1 year"
+    ExpiresByType image/x-icon         "access plus 1 year"
+    ExpiresByType text/css             "access plus 6 months"
+    ExpiresByType application/javascript "access plus 6 months"
+    ExpiresByType font/woff2           "access plus 1 year"
+    ExpiresByType font/woff            "access plus 1 year"
+</IfModule>
+
+# ── Compression ───────────────────────────────────────────────────────────────
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json text/xml application/xml
+</IfModule>
+
+# ── PHP settings (if allowed on shared hosting) ───────────────────────────────
+<IfModule mod_php.c>
+    php_value upload_max_filesize 64M
+    php_value post_max_size 64M
+    php_value memory_limit 256M
+    php_value max_execution_time 300
+</IfModule>

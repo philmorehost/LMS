@@ -1,0 +1,11 @@
+<?php
+
+namespace App\Http\Controllers\Instructor;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+
+class LessonController extends Controller
+{
+    public function __call($method, $args) { return response()->json(["status" => "stub", "method" => $method, "class" => __CLASS__]); }
+}
