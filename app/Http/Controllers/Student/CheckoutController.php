@@ -179,18 +179,50 @@ class CheckoutController extends Controller
             $course_ids = $result['data']['metadata']['cart_items'];
             $amount = $result['data']['amount'] / 100;
 
+            // Fetch all courses to calculate their individual prices for correct splitting
+            $cartCourses = \DB::table('courses')->whereIn('id', $course_ids)->get()->keyBy('id');
+
             foreach ($course_ids as $course_id) {
+                $course = $cartCourses->get($course_id);
+                if (!$course) continue;
+
+                $coursePrice = $course->price;
+
                 // Log payment
                 \DB::table('payments')->insert([
                     'user_id' => $user_id,
                     'course_id' => $course_id,
-                    'amount' => $amount / count($course_ids),
+                    'amount' => $coursePrice,
                     'gateway' => 'paystack',
                     'status' => 'completed',
                     'transaction_id' => $reference,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
+
+                // Distribute Earnings to Instructor Wallet
+                try {
+                    $commissionRate = floatval($settings['commission_rate'] ?? 20) / 100;
+                    $instructorEarning = $coursePrice * (1 - $commissionRate);
+
+                    $wallet = \DB::table('wallet_balances')->where('user_id', $course->instructor_id)->first();
+
+                    if ($wallet) {
+                        \DB::table('wallet_balances')
+                            ->where('user_id', $course->instructor_id)
+                            ->increment('balance', $instructorEarning);
+                    } else {
+                        \DB::table('wallet_balances')->insert([
+                            'user_id' => $course->instructor_id,
+                            'balance' => $instructorEarning,
+                            'locked_balance' => 0.00,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    \Log::error("Failed to distribute earnings to instructor {$course->instructor_id} for course {$course_id}: " . $e->getMessage());
+                }
 
                 // Enroll user
                 $this->enrollUser($user_id, $course_id);

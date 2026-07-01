@@ -34,7 +34,7 @@ return new class extends Migration
                 $table->rememberToken();
                 $table->softDeletes();
                 $table->timestamps();
-            });
+    });
         }        }
 
         // â”€â”€â”€ Password Reset Tokens â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -44,7 +44,7 @@ return new class extends Migration
                 $table->string('email')->primary();
                 $table->string('token');
                 $table->timestamp('created_at')->nullable();
-            });
+    });
         }        }
 
         // â”€â”€â”€ Sessions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -57,7 +57,7 @@ return new class extends Migration
                 $table->text('user_agent')->nullable();
                 $table->longText('payload');
                 $table->integer('last_activity')->index();
-            });
+    });
         }        }
 
         // â”€â”€â”€ Settings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -69,7 +69,7 @@ return new class extends Migration
                 $table->text('value')->nullable();
                 $table->string('group')->default('general');
                 $table->timestamps();
-            });
+    });
         }        }
 
         // â”€â”€â”€ Cache Table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -79,7 +79,7 @@ return new class extends Migration
                 $table->string('key')->primary();
                 $table->mediumText('value');
                 $table->integer('expiration');
-            });
+    });
         }        }
 
         if (!Schema::hasTable('cache_locks')) {
@@ -88,7 +88,7 @@ return new class extends Migration
                 $table->string('key')->primary();
                 $table->string('owner');
                 $table->integer('expiration');
-            });
+    });
         }        }
 
         // â”€â”€â”€ Jobs Table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -102,7 +102,7 @@ return new class extends Migration
                 $table->unsignedInteger('reserved_at')->nullable();
                 $table->unsignedInteger('available_at');
                 $table->unsignedInteger('created_at');
-            });
+    });
         }        }
 
         if (!Schema::hasTable('job_batches')) {
@@ -117,7 +117,7 @@ return new class extends Migration
                 $table->mediumText('options')->nullable();
                 $table->integer('cancelled_at')->nullable();
                 $table->integer('created_at');
-            });
+    });
         }        }
 
         if (!Schema::hasTable('failed_jobs')) {
@@ -130,7 +130,7 @@ return new class extends Migration
                 $table->longText('payload');
                 $table->longText('exception');
                 $table->timestamp('failed_at')->useCurrent();
-            });
+    });
         }        }
     }
 
@@ -144,5 +144,6 @@ return new class extends Migration
         Schema::dropIfExists('sessions');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('settings');
-        Schema::dropIfExists('');
+    }
+
 };

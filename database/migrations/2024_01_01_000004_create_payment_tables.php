@@ -164,5 +164,6 @@ return new class extends Migration
         Schema::dropIfExists('coupon_usage');
         Schema::dropIfExists('coupons');
         Schema::dropIfExists('carts');
-        Schema::dropIfExists('');
+    }
+
 };

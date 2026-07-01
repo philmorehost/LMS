@@ -133,5 +133,6 @@ return new class extends Migration
         Schema::dropIfExists('blocked_ips');
         Schema::dropIfExists('blocked_accounts');
         Schema::dropIfExists('login_attempts');
-        Schema::dropIfExists('');
+    }
+
 };

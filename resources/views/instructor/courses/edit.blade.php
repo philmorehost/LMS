@@ -10,7 +10,7 @@
 </div>
 @endif
 
-<form method="POST" action="{{ route('instructor.courses.update', $course->id) }}">
+<form method="POST" action="{{ route('instructor.courses.update', $course->id) }}" enctype="multipart/form-data">
     @csrf
     @method('PUT')
     
@@ -52,25 +52,61 @@
             </div>
         </div>
 
-        <!-- Right: Syllabus lesson lectures list editor -->
+        <!-- Right: Syllabus module and lectures list editor -->
         <div class="panel-card">
             <div class="panel-header">
-                <h3 class="panel-title">Syllabus Lecture Content</h3>
+                <h3 class="panel-title">Syllabus Content (Modules & Lessons)</h3>
             </div>
             
             <div style="display:flex; flex-direction:column; gap:16px;">
-                @foreach($lessons as $index => $lesson)
-                <div style="background:rgba(255,255,255,0.02); border:1px solid var(--border); border-radius:12px; padding:16px;">
-                    <div style="font-weight:700; font-size:13px; color:var(--primary-light); margin-bottom:10px;">Lecture {{ $index + 1 }}</div>
+                @foreach($modules as $mIndex => $module)
+                <div style="background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:12px; padding:16px;">
+                    <div style="font-weight:700; font-size:14px; color:var(--primary); margin-bottom:10px;">Module {{ $mIndex + 1 }}</div>
                     
-                    <div style="margin-bottom:10px;">
-                        <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:4px;">Lecture Title</label>
-                        <input type="text" name="lessons[{{ $lesson->id }}][title]" value="{{ $lesson->title }}" style="width:100%; padding:8px 12px; background:#000; border:1px solid var(--border); border-radius:8px; color:#fff; font-size:13px;" required>
+                    <div style="margin-bottom:16px;">
+                        <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:4px;">Module Title</label>
+                        <input type="text" name="modules[{{ $module->id }}][title]" value="{{ $module->title }}" style="width:100%; padding:8px 12px; background:#000; border:1px solid var(--border); border-radius:8px; color:#fff; font-size:13px;" required>
                     </div>
                     
-                    <div>
-                        <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:4px;">Streaming Video URL (YouTube embed link)</label>
-                        <input type="text" name="lessons[{{ $lesson->id }}][video_url]" value="{{ $lesson->video_url }}" style="width:100%; padding:8px 12px; background:#000; border:1px solid var(--border); border-radius:8px; color:#fff; font-size:13px;" placeholder="e.g. https://www.youtube.com/embed/..." required>
+                    <div style="margin-left:20px; display:flex; flex-direction:column; gap:12px;">
+                        @foreach($module->lessons as $lIndex => $lesson)
+                        <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:12px;">
+                            <div style="font-weight:600; font-size:12px; color:var(--primary-light); margin-bottom:10px;">Lesson {{ $lIndex + 1 }}</div>
+
+                            <div style="margin-bottom:10px;">
+                                <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:4px;">Lesson Title</label>
+                                <input type="text" name="lessons[{{ $lesson->id }}][title]" value="{{ $lesson->title }}" style="width:100%; padding:8px 12px; background:#111; border:1px solid var(--border); border-radius:6px; color:#fff; font-size:12px;" required>
+                            </div>
+
+                            <div style="margin-bottom:10px;">
+                                <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:4px;">Type</label>
+                                <select name="lessons[{{ $lesson->id }}][type]" style="width:100%; padding:8px 12px; background:#111; border:1px solid var(--border); border-radius:6px; color:#fff; font-size:12px;" required>
+                                    <option value="video" {{ $lesson->type == 'video' ? 'selected' : '' }}>Video</option>
+                                    <option value="text" {{ $lesson->type == 'text' ? 'selected' : '' }}>Rich Text</option>
+                                    <option value="file" {{ $lesson->type == 'file' ? 'selected' : '' }}>File Download</option>
+                                </select>
+                            </div>
+
+                            <div style="margin-bottom:10px;">
+                                <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:4px;">Streaming Video URL</label>
+                                <input type="text" name="lessons[{{ $lesson->id }}][video_url]" value="{{ $lesson->video_url }}" style="width:100%; padding:8px 12px; background:#111; border:1px solid var(--border); border-radius:6px; color:#fff; font-size:12px;" placeholder="e.g. https://www.youtube.com/embed/...">
+                            </div>
+
+                            <div style="margin-bottom:10px;">
+                                <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:4px;">Rich Text Content</label>
+                                <textarea name="lessons[{{ $lesson->id }}][content]" style="width:100%; padding:8px 12px; background:#111; border:1px solid var(--border); border-radius:6px; color:#fff; font-size:12px;" rows="3">{{ $lesson->content }}</textarea>
+                            </div>
+
+                            <div style="margin-bottom:10px;">
+                                <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:4px;">File Upload (if type is File)</label>
+                                <input type="file" name="lessons[{{ $lesson->id }}][file]" style="width:100%; padding:8px 12px; background:#111; border:1px solid var(--border); border-radius:6px; color:#fff; font-size:12px;">
+                                @if($lesson->file_path)
+                                    <div style="margin-top: 4px; font-size: 11px; color: var(--primary);">Current file: {{ basename($lesson->file_path) }}</div>
+                                @endif
+                            </div>
+
+                        </div>
+                        @endforeach
                     </div>
                 </div>
                 @endforeach
