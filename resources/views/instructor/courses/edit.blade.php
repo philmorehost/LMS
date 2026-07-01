@@ -54,23 +54,27 @@
 
         <!-- Right: Syllabus module and lectures list editor -->
         <div class="panel-card">
-            <div class="panel-header">
+            <div class="panel-header" style="display:flex; justify-content:space-between; align-items:center;">
                 <h3 class="panel-title">Syllabus Content (Modules & Lessons)</h3>
+                <button type="button" onclick="addModule()" style="padding:6px 12px; background:rgba(255,255,255,0.1); border:1px solid var(--border); border-radius:6px; color:#fff; font-size:12px; cursor:pointer;">+ Add Module</button>
             </div>
             
-            <div style="display:flex; flex-direction:column; gap:16px;">
+            <div id="modules-container" style="display:flex; flex-direction:column; gap:16px;">
                 @foreach($modules as $mIndex => $module)
-                <div style="background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:12px; padding:16px;">
-                    <div style="font-weight:700; font-size:14px; color:var(--primary); margin-bottom:10px;">Module {{ $mIndex + 1 }}</div>
+                <div class="module-item" data-module-id="{{ $module->id }}" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:12px; padding:16px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <div style="font-weight:700; font-size:14px; color:var(--primary);">Module {{ $mIndex + 1 }}</div>
+                        <button type="button" onclick="addLesson('existing_{{ $module->id }}', this)" style="padding:4px 8px; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.2); border-radius:4px; color:#34d399; font-size:11px; cursor:pointer;">+ Add Lesson</button>
+                    </div>
                     
                     <div style="margin-bottom:16px;">
                         <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:4px;">Module Title</label>
                         <input type="text" name="modules[{{ $module->id }}][title]" value="{{ $module->title }}" style="width:100%; padding:8px 12px; background:#000; border:1px solid var(--border); border-radius:8px; color:#fff; font-size:13px;" required>
                     </div>
                     
-                    <div style="margin-left:20px; display:flex; flex-direction:column; gap:12px;">
+                    <div class="lessons-container" style="margin-left:20px; display:flex; flex-direction:column; gap:12px;">
                         @foreach($module->lessons as $lIndex => $lesson)
-                        <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:12px;">
+                        <div class="lesson-item" style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:12px;">
                             <div style="font-weight:600; font-size:12px; color:var(--primary-light); margin-bottom:10px;">Lesson {{ $lIndex + 1 }}</div>
 
                             <div style="margin-bottom:10px;">
@@ -118,6 +122,77 @@
 </form>
 
 <script>
+    let newModuleCount = 0;
+    let newLessonCount = 0;
+
+    function addModule() {
+        const container = document.getElementById('modules-container');
+        const moduleIndex = 'new_' + newModuleCount;
+        newModuleCount++;
+
+        const moduleHtml = `
+            <div class="module-item" data-module-id="${moduleIndex}" style="background:rgba(255,255,255,0.05); border:1px solid var(--border); border-radius:12px; padding:16px; margin-top:16px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <div style="font-weight:700; font-size:14px; color:var(--primary);">New Module</div>
+                    <button type="button" onclick="addLesson('${moduleIndex}', this)" style="padding:4px 8px; background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.2); border-radius:4px; color:#34d399; font-size:11px; cursor:pointer;">+ Add Lesson</button>
+                </div>
+
+                <div style="margin-bottom:16px;">
+                    <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:4px;">Module Title</label>
+                    <input type="text" name="new_modules[${moduleIndex}][title]" style="width:100%; padding:8px 12px; background:#000; border:1px solid var(--border); border-radius:8px; color:#fff; font-size:13px;" required>
+                </div>
+
+                <div class="lessons-container" style="margin-left:20px; display:flex; flex-direction:column; gap:12px;">
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', moduleHtml);
+    }
+
+    function addLesson(moduleId, btn) {
+        const container = btn.closest('.module-item').querySelector('.lessons-container');
+        const lessonIndex = 'new_' + newLessonCount;
+        newLessonCount++;
+
+        const lessonHtml = `
+            <div class="lesson-item" style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:12px;">
+                <div style="font-weight:600; font-size:12px; color:var(--primary-light); margin-bottom:10px;">New Lesson</div>
+
+                <input type="hidden" name="new_lessons[${lessonIndex}][module_id]" value="${moduleId}">
+
+                <div style="margin-bottom:10px;">
+                    <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:4px;">Lesson Title</label>
+                    <input type="text" name="new_lessons[${lessonIndex}][title]" style="width:100%; padding:8px 12px; background:#111; border:1px solid var(--border); border-radius:6px; color:#fff; font-size:12px;" required>
+                </div>
+
+                <div style="margin-bottom:10px;">
+                    <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:4px;">Type</label>
+                    <select name="new_lessons[${lessonIndex}][type]" style="width:100%; padding:8px 12px; background:#111; border:1px solid var(--border); border-radius:6px; color:#fff; font-size:12px;" required>
+                        <option value="video">Video</option>
+                        <option value="text">Rich Text</option>
+                        <option value="file">File Download</option>
+                    </select>
+                </div>
+
+                <div style="margin-bottom:10px;">
+                    <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:4px;">Streaming Video URL</label>
+                    <input type="text" name="new_lessons[${lessonIndex}][video_url]" style="width:100%; padding:8px 12px; background:#111; border:1px solid var(--border); border-radius:6px; color:#fff; font-size:12px;" placeholder="e.g. https://www.youtube.com/embed/...">
+                </div>
+
+                <div style="margin-bottom:10px;">
+                    <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:4px;">Rich Text Content</label>
+                    <textarea name="new_lessons[${lessonIndex}][content]" style="width:100%; padding:8px 12px; background:#111; border:1px solid var(--border); border-radius:6px; color:#fff; font-size:12px;" rows="3"></textarea>
+                </div>
+
+                <div style="margin-bottom:10px;">
+                    <label style="display:block; font-size:11px; color:var(--muted); margin-bottom:4px;">File Upload</label>
+                    <input type="file" name="new_lessons[${lessonIndex}][file]" style="width:100%; padding:8px 12px; background:#111; border:1px solid var(--border); border-radius:6px; color:#fff; font-size:12px;">
+                </div>
+            </div>
+        `;
+        container.insertAdjacentHTML('beforeend', lessonHtml);
+    }
+
     function togglePriceField(checkbox) {
         const priceInput = document.getElementById('priceInput');
         if (checkbox.checked) {

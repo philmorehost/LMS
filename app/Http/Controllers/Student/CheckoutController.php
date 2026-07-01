@@ -182,17 +182,21 @@ class CheckoutController extends Controller
             // Fetch all courses to calculate their individual prices for correct splitting
             $cartCourses = \DB::table('courses')->whereIn('id', $course_ids)->get()->keyBy('id');
 
+            $totalOriginalPrice = $cartCourses->sum('price');
+
             foreach ($course_ids as $course_id) {
                 $course = $cartCourses->get($course_id);
                 if (!$course) continue;
 
+                // Determine proportion of total amount
                 $coursePrice = $course->price;
+                $paidCourseAmount = $totalOriginalPrice > 0 ? ($coursePrice / $totalOriginalPrice) * $amount : $amount / count($course_ids);
 
                 // Log payment
                 \DB::table('payments')->insert([
                     'user_id' => $user_id,
                     'course_id' => $course_id,
-                    'amount' => $coursePrice,
+                    'amount' => $paidCourseAmount,
                     'gateway' => 'paystack',
                     'status' => 'completed',
                     'transaction_id' => $reference,
@@ -203,7 +207,7 @@ class CheckoutController extends Controller
                 // Distribute Earnings to Instructor Wallet
                 try {
                     $commissionRate = floatval($settings['commission_rate'] ?? 20) / 100;
-                    $instructorEarning = $coursePrice * (1 - $commissionRate);
+                    $instructorEarning = $paidCourseAmount * (1 - $commissionRate);
 
                     $wallet = \DB::table('wallet_balances')->where('user_id', $course->instructor_id)->first();
 

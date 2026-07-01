@@ -159,10 +159,28 @@ class CourseController extends Controller
 
             if ($request->has('modules')) {
                 foreach ($request->modules as $moduleId => $modData) {
-                    \DB::table('course_modules')->where('id', $moduleId)->update([
+                    \DB::table('course_modules')
+                        ->where('id', $moduleId)
+                        ->where('course_id', $id)
+                        ->update([
+                            'title' => $modData['title'],
+                            'updated_at' => now(),
+                        ]);
+                }
+            }
+
+            $newModuleMap = [];
+
+            if ($request->has('new_modules')) {
+                foreach ($request->new_modules as $tempModId => $modData) {
+                    $newId = \DB::table('course_modules')->insertGetId([
+                        'course_id' => $id,
                         'title' => $modData['title'],
+                        'position' => 0,
+                        'created_at' => now(),
                         'updated_at' => now(),
                     ]);
+                    $newModuleMap[$tempModId] = $newId;
                 }
             }
 
@@ -182,7 +200,45 @@ class CourseController extends Controller
                         $updateData['file_path'] = $filePath;
                     }
 
-                    \DB::table('course_lessons')->where('id', $lessonId)->update($updateData);
+                    \DB::table('course_lessons')
+                        ->where('id', $lessonId)
+                        ->where('course_id', $id)
+                        ->update($updateData);
+                }
+            }
+
+            if ($request->has('new_lessons')) {
+                foreach ($request->new_lessons as $tempLesId => $lesData) {
+                    $moduleIdStr = $lesData['module_id'];
+                    $actualModuleId = null;
+
+                    if (str_starts_with($moduleIdStr, 'existing_')) {
+                        $actualModuleId = str_replace('existing_', '', $moduleIdStr);
+                    } else if (isset($newModuleMap[$moduleIdStr])) {
+                        $actualModuleId = $newModuleMap[$moduleIdStr];
+                    }
+
+                    if ($actualModuleId) {
+                        $insertData = [
+                            'module_id' => $actualModuleId,
+                            'course_id' => $id,
+                            'title' => $lesData['title'],
+                            'video_url' => $lesData['video_url'] ?? null,
+                            'content' => $lesData['content'] ?? null,
+                            'type' => $lesData['type'] ?? 'video',
+                            'position' => 0,
+                            'is_published' => true,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+
+                        if (isset($lesData['file']) && $request->hasFile("new_lessons.{$tempLesId}.file")) {
+                            $filePath = $request->file("new_lessons.{$tempLesId}.file")->store('courses/lessons/files', 'public');
+                            $insertData['file_path'] = $filePath;
+                        }
+
+                        \DB::table('course_lessons')->insert($insertData);
+                    }
                 }
             }
         } catch (\Exception $e) {
