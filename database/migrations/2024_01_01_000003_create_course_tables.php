@@ -224,5 +224,6 @@ return new class extends Migration
         Schema::dropIfExists('courses');
         Schema::dropIfExists('course_languages');
         Schema::dropIfExists('course_levels');
-        Schema::dropIfExists('');
+    }
+
 };
