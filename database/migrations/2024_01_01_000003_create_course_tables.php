@@ -96,10 +96,10 @@ return new class extends Migration
         });
         }
         // â”€â”€â”€ Course Lessons â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-        if (!Schema::hasTable('course_lessons')) {
-        Schema::create('course_lessons', function (Blueprint $table) {
+        if (!Schema::hasTable('lessons')) {
+        Schema::create('lessons', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('module_id')->constrained('course_modules')->cascadeOnDelete();
+            $table->foreignId('module_id')->nullable()->constrained('course_modules')->cascadeOnDelete();
             $table->foreignId('course_id')->constrained()->cascadeOnDelete();
             $table->string('title');
             $table->enum('type', ['video', 'text', 'file', 'quiz'])->default('video');
@@ -137,7 +137,7 @@ return new class extends Migration
         Schema::create('lesson_progress', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('lesson_id')->constrained('course_lessons')->cascadeOnDelete();
+            $table->foreignId('lesson_id')->constrained('lessons')->cascadeOnDelete();
             $table->foreignId('enrollment_id')->constrained()->cascadeOnDelete();
             $table->boolean('is_completed')->default(false);
             $table->integer('watch_percentage')->default(0);
@@ -173,7 +173,7 @@ return new class extends Migration
         if (!Schema::hasTable('quizzes')) {
         Schema::create('quizzes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('lesson_id')->constrained('course_lessons')->cascadeOnDelete();
+            $table->foreignId('lesson_id')->constrained('lessons')->cascadeOnDelete();
             $table->foreignId('course_id')->constrained()->cascadeOnDelete();
             $table->string('title');
             $table->integer('time_limit_minutes')->nullable();
@@ -219,7 +219,7 @@ return new class extends Migration
         Schema::dropIfExists('course_reviews');
         Schema::dropIfExists('lesson_progress');
         Schema::dropIfExists('enrollments');
-        Schema::dropIfExists('course_lessons');
+        Schema::dropIfExists('lessons');
         Schema::dropIfExists('course_modules');
         Schema::dropIfExists('courses');
         Schema::dropIfExists('course_languages');

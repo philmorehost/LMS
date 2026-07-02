@@ -32,9 +32,17 @@ class DatabaseSeeder extends Seeder
         // 2. Fetch an Instructor to link courses
         $instructor = DB::table('users')->where('role', 'instructor')->first();
         if (!$instructor) {
-            $instructor = DB::table('users')->where('role', 'admin')->first();
+            $instructorId = DB::table('users')->insertGetId([
+                'name' => 'Instructor User',
+                'email' => 'instructor@example.com',
+                'password' => bcrypt('password'),
+                'role' => 'instructor',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } else {
+            $instructorId = $instructor->id;
         }
-        $instructorId = $instructor ? $instructor->id : 1;
 
         // 3. Seed Course 1: Web Development
         $catWeb = DB::table('course_categories')->where('slug', 'web-development')->first();
@@ -65,10 +73,10 @@ class DatabaseSeeder extends Seeder
             DB::table('lessons')->insert([
                 'course_id' => $course1Id,
                 'title' => $les['title'],
-                'description' => 'Learn core fundamentals in this detailed training lecture.',
-                'video_provider' => 'youtube',
+                'content' => 'Learn core fundamentals in this detailed training lecture.',
+                'video_source' => 'youtube',
                 'video_url' => $les['video_url'],
-                'duration' => 600,
+                'duration_minutes' => 10,
                 'position' => $index + 1,
                 'is_published' => true,
                 'created_at' => now(),
@@ -102,10 +110,10 @@ class DatabaseSeeder extends Seeder
             DB::table('lessons')->insert([
                 'course_id' => $course2Id,
                 'title' => $les['title'],
-                'description' => 'Professional UI/UX guidelines and workspace tips.',
-                'video_provider' => 'youtube',
+                'content' => 'Professional UI/UX guidelines and workspace tips.',
+                'video_source' => 'youtube',
                 'video_url' => $les['video_url'],
-                'duration' => 450,
+                'duration_minutes' => 7,
                 'position' => $index + 1,
                 'is_published' => true,
                 'created_at' => now(),
